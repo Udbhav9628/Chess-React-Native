@@ -2,9 +2,8 @@ import { StyleSheet, View } from 'react-native';
 import React from 'react';
 
 const Square = ({ row, column }: { row: number; column: number; }) => {
-    const offSet = row % 2 ? 0 : 1;
     return (
-        <View style={styles(column, offSet).container}>
+        <View style={styles(column, row).container}>
             {/* <Text>{column}</Text> */}
         </View>
     )
@@ -12,10 +11,10 @@ const Square = ({ row, column }: { row: number; column: number; }) => {
 
 export default Square;
 
-const styles = (column: number, offSet: number) => StyleSheet.create({
+const styles = (column: number, row: number) => StyleSheet.create({
     container: {
         width: 45,
         height: 40,
-        backgroundColor: (column + offSet) % 2 ? '#eeeed2' : '#769656'
+        backgroundColor: (column + row) % 2 ? '#eeeed2' : '#769656'
     }
 })

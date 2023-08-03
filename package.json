@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "chess.js": "^1.0.0-beta.6",
+    "chess.js": "^0.11.0",
     "react": "18.1.0",
     "react-native": "0.70.10",
     "react-native-gesture-handler": "^2.9.0",
@@ -22,6 +22,7 @@
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
     "@tsconfig/react-native": "^2.0.2",
+    "@types/chess.js": "^0.13.4",
     "@types/jest": "^26.0.23",
     "@types/react": "^18.0.21",
     "@types/react-native": "^0.70.6",

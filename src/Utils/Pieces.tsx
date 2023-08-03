@@ -1,7 +1,8 @@
 import { Image, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { PanGestureHandler } from "react-native-gesture-handler";
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming, runOnJS } from "react-native-reanimated";
+import { toTranslation, toPosition } from "../Utils/Notation";
 
 const PIECES = {
     'br': require("../Assets/Icons/black-rook.png"),
@@ -19,12 +20,15 @@ const PIECES = {
 };
 
 interface PiecesProps {
-    id: keyof typeof PIECES
-    position: any
+    id: keyof typeof PIECES;
+    position: any;
+    chess: any;
+    onTurn: Function
 }
 
-const Pieces = ({ id, position }: PiecesProps) => {
+const Pieces = ({ id, position, chess, onTurn }: PiecesProps) => {
 
+    const isGestureActive = useSharedValue(false);
     const offsetX = useSharedValue(0)
     const offsetY = useSharedValue(0)
     const translateX = useSharedValue(position?.x)
@@ -32,18 +36,50 @@ const Pieces = ({ id, position }: PiecesProps) => {
 
     const piece = useAnimatedStyle(() => ({
         position: 'absolute',
-        transform: [{ translateX: translateX?.value }, { translateY: translateY.value }]
+        transform: [
+            { translateX: translateX?.value },
+            { translateY: translateY.value }
+        ]
     }))
+
+    const movePiece = useCallback(
+        (to: string) => {
+            const moves = chess.chessInstance.moves({ verbose: true });
+            const from = toPosition({ x: offsetX.value, y: offsetY.value });
+            const move = moves.find((m: any) => m.from === from && m.to === to);
+            const { x, y } = toTranslation(move ? move.to : from);
+            translateX.value = withTiming(x, {}, () => {
+                offsetX.value = translateX.value
+            });
+            translateY.value = withTiming(y, {}, () => {
+                offsetY.value = translateY.value;
+                isGestureActive.value = false;
+            });
+            if (move) {
+                chess.chessInstance.move({ from, to });
+                // console.log(chess.chessInstance.ascii())
+                onTurn();
+            }
+        },
+        [chess, isGestureActive, offsetX, offsetY, translateX, translateY]
+    );
 
     const onGestureEvent = useAnimatedGestureHandler({
         onStart: () => {
+            // //Store the initial translation values for later use
             offsetX.value = translateX?.value;
-            offsetY.value = translateY?.value
+            offsetY.value = translateY?.value;
         },
         onActive: ({ translationX, translationY }) => {
+            // // Update the translation values based on the gesture event
             translateX.value = translationX + offsetX?.value;
             translateY.value = translationY + offsetY?.value;
-        }
+        },
+        onEnd: () => {
+            runOnJS(movePiece)(
+                toPosition({ x: translateX.value, y: translateY.value })
+            );
+        },
     })
 
     return (

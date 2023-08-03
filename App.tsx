@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import Board from './src/Components/Board';
 import { Chess } from "chess.js";
@@ -7,10 +7,18 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const App = () => {
 
   const chessInstance: any = new Chess();
+
   const [chessState, setchessState] = useState({
     player: 'w',
-    board: chessInstance.board()
+    board: chessInstance.board(),
+    chessInstance: chessInstance
   })
+
+  useEffect(() => {
+    console.log(chessState.chessInstance.ascii())
+    // console.log(chessState.chessInstance.fen())
+  }, [chessState])
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -19,7 +27,7 @@ const App = () => {
           animated={true}
           backgroundColor="black"
         />
-        <Board chessState={chessState} />
+        <Board chessState={chessState} setchessState={setchessState} />
       </GestureHandlerRootView>
     </SafeAreaView>
   )

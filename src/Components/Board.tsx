@@ -1,19 +1,34 @@
 import { StyleSheet, View } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import Row from './Row';
 import Pieces from '../Utils/Pieces';
 // import Logo from '../Assets/Pieces/rook4-w.svg';
 
-const Board = ({ chessState }: any) => {
+interface Props {
+    chessState: any;
+    setchessState: Function
+}
+
+const Board = ({ chessState, setchessState }: Props) => {
+    const onTurn = useCallback(() => {
+        setchessState({
+            player: chessState?.player === "w" ? "b" : "w",
+            board: chessState?.board,
+            chessInstance: chessState?.chessInstance
+        });
+    }, [chessState]);
     return (
         <View style={styles.container}>
             {
                 new Array(8).fill(0).map((_, index) => (<Row key={index} row={index} />))
             }
             {chessState?.board?.map((row: Array<any>, yIndex: number) => row?.map((square, xIndex) => {
+                // //console.log('************8');
+                // //console.log(yIndex, '  ', xIndex);
+                // //console.log(square);
                 if (square !== null) {
                     return (
-                        <Pieces position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} />
+                        <Pieces onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} />
                     )
                 }
             }))}
@@ -29,4 +44,4 @@ const styles = StyleSheet.create({
         borderColor: '#023020',
         margin: 10
     }
-})
+});
