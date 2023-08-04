@@ -4,7 +4,6 @@ import React from 'react';
 const Square = ({ row, column }: { row: number; column: number; }) => {
     return (
         <View style={styles(column, row).container}>
-            {/* <Text>{column}</Text> */}
         </View>
     )
 }

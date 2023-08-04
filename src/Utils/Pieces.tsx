@@ -19,17 +19,10 @@ const PIECES = {
     'wp': require("../Assets/Icons/white-pawn.png"),
 };
 
-interface PiecesProps {
-    id: keyof typeof PIECES;
-    position: any;
-    chess: any;
-    onTurn: Function
-}
-
-const Pieces = ({ id, position, chess, onTurn }: PiecesProps) => {
+const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
 
     const isGestureActive = useSharedValue(false);
-    const offsetX = useSharedValue(0)
+    const offsetX = useSharedValue(0)//// Where Chess Piece is
     const offsetY = useSharedValue(0)
     const translateX = useSharedValue(position?.x)
     const translateY = useSharedValue(position?.y)
@@ -48,16 +41,16 @@ const Pieces = ({ id, position, chess, onTurn }: PiecesProps) => {
             const from = toPosition({ x: offsetX.value, y: offsetY.value });
             const move = moves.find((m: any) => m.from === from && m.to === to);
             const { x, y } = toTranslation(move ? move.to : from);
-            translateX.value = withTiming(x, {}, () => {
-                offsetX.value = translateX.value
+            translateX.value = withTiming(x, { duration: 200 }, () => {
+                //// since move has been make updating offsetX.value
+                offsetX.value = translateX.value;
             });
-            translateY.value = withTiming(y, {}, () => {
+            translateY.value = withTiming(y, { duration: 200 }, () => {
                 offsetY.value = translateY.value;
                 isGestureActive.value = false;
             });
             if (move) {
                 chess.chessInstance.move({ from, to });
-                // console.log(chess.chessInstance.ascii())
                 onTurn();
             }
         },
@@ -77,13 +70,13 @@ const Pieces = ({ id, position, chess, onTurn }: PiecesProps) => {
         },
         onEnd: () => {
             runOnJS(movePiece)(
-                toPosition({ x: translateX.value, y: translateY.value })
+                toPosition({ x: translateX.value, y: translateY.value }) // // returns a3 , e4 etc
             );
         },
     })
 
     return (
-        <PanGestureHandler onGestureEvent={onGestureEvent}>
+        <PanGestureHandler onGestureEvent={onGestureEvent} enabled={enableMove}>
             <Animated.View style={piece}>
                 <Image style={styles.Pieces} source={PIECES[id]} />
             </Animated.View>
@@ -99,3 +92,11 @@ const styles = StyleSheet.create({
         height: 40,
     }
 })
+
+interface PiecesProps {
+    id: keyof typeof PIECES;
+    position: any;
+    chess: any;
+    onTurn: Function;
+    enableMove: boolean;
+}

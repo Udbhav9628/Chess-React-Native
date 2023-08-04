@@ -16,7 +16,8 @@ const Board = ({ chessState, setchessState }: Props) => {
             board: chessState?.board,
             chessInstance: chessState?.chessInstance
         });
-    }, [chessState]);
+    }, [chessState?.player, chessState?.board, chessState?.chessInstance]);
+
     return (
         <View style={styles.container}>
             {
@@ -28,7 +29,7 @@ const Board = ({ chessState, setchessState }: Props) => {
                 // //console.log(square);
                 if (square !== null) {
                     return (
-                        <Pieces onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} />
+                        <Pieces enableMove={chessState?.player === square.color} onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} />
                     )
                 }
             }))}
