@@ -3,6 +3,9 @@ import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import Board from './src/Components/Board';
 import { Chess } from "chess.js";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Peer from "simple-peer";
+import io from "socket.io-client";
+const socket = io("https://13.233.65.153");
 
 const App = () => {
 
@@ -14,8 +17,10 @@ const App = () => {
     chessInstance: chessInstance
   })
 
+
   useEffect(() => {
     console.log(chessState.chessInstance.ascii())
+    console.log(chessState.chessInstance.turn())
     // console.log(chessState.chessInstance.fen())
   }, [chessState])
 

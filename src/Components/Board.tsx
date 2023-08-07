@@ -12,8 +12,8 @@ interface Props {
 const Board = ({ chessState, setchessState }: Props) => {
     const onTurn = useCallback(() => {
         setchessState({
-            player: chessState?.player === "w" ? "b" : "w",
-            board: chessState?.board,
+            player: chessState?.chessInstance?.turn(),
+            board: chessState?.chessInstance?.board(),
             chessInstance: chessState?.chessInstance
         });
     }, [chessState?.player, chessState?.board, chessState?.chessInstance]);

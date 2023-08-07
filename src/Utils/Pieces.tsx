@@ -21,40 +21,37 @@ const PIECES = {
 
 const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
 
-    const isGestureActive = useSharedValue(false);
     const offsetX = useSharedValue(0)//// Where Chess Piece is
     const offsetY = useSharedValue(0)
     const translateX = useSharedValue(position?.x)
     const translateY = useSharedValue(position?.y)
-
-    const piece = useAnimatedStyle(() => ({
-        position: 'absolute',
-        transform: [
-            { translateX: translateX?.value },
-            { translateY: translateY.value }
-        ]
-    }))
+    const isGestureActive = useSharedValue(false);
 
     const movePiece = useCallback(
         (to: string) => {
             const moves = chess.chessInstance.moves({ verbose: true });
             const from = toPosition({ x: offsetX.value, y: offsetY.value });
-            const move = moves.find((m: any) => m.from === from && m.to === to);
+            const possibleMoves = chess.chessInstance.moves({ square: from })
+            // console.log(possibleMoves);
+
+            const move = moves.find((m: any) => m.from === from && m.to === to); // ! To Do Replace this with possible move only for more efficiency;
             const { x, y } = toTranslation(move ? move.to : from);
-            translateX.value = withTiming(x, { duration: 200 }, () => {
+            translateX.value = withTiming(x, { duration: 300 }, () => {
                 //// since move has been make updating offsetX.value
                 offsetX.value = translateX.value;
             });
-            translateY.value = withTiming(y, { duration: 200 }, () => {
+            translateY.value = withTiming(y, { duration: 300 }, () => {
                 offsetY.value = translateY.value;
-                isGestureActive.value = false;
             });
             if (move) {
-                chess.chessInstance.move({ from, to });
+                const MoveResult = chess.chessInstance.move({ from, to });
                 onTurn();
+                // ! To DO
+                // console.log("***");
+                // console.log(MoveResult);
             }
         },
-        [chess, isGestureActive, offsetX, offsetY, translateX, translateY]
+        [chess, offsetX, offsetY, translateX, translateY]
     );
 
     const onGestureEvent = useAnimatedGestureHandler({
@@ -65,22 +62,54 @@ const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
         },
         onActive: ({ translationX, translationY }) => {
             // // Update the translation values based on the gesture event
+            isGestureActive.value = true;
             translateX.value = translationX + offsetX?.value;
             translateY.value = translationY + offsetY?.value;
         },
         onEnd: () => {
+            isGestureActive.value = false;
             runOnJS(movePiece)(
                 toPosition({ x: translateX.value, y: translateY.value }) // // returns a3 , e4 etc
             );
         },
     })
 
+    const piece = useAnimatedStyle(() => ({
+        position: 'absolute',
+        zIndex: isGestureActive.value ? 100 : 10,
+        transform: [
+            { translateX: translateX?.value },
+            { translateY: translateY.value }
+        ],
+    }));
+
+    const overlaySquare = useAnimatedStyle(() => {
+        const to = toTranslation(toPosition({ x: translateX.value, y: translateY.value }))
+        return {
+            width: 45,
+            height: 40,
+            backgroundColor: isGestureActive.value
+                ? "rgba(255, 255, 0, 0.5)"
+                : "transparent",
+            position: 'absolute',
+            zIndex: 0,
+            opacity: isGestureActive.value ? 1 : 0,
+            transform: [
+                { translateX: to.x },
+                { translateY: to.y }
+            ],
+        }
+    })
+
     return (
-        <PanGestureHandler onGestureEvent={onGestureEvent} enabled={enableMove}>
-            <Animated.View style={piece}>
-                <Image style={styles.Pieces} source={PIECES[id]} />
-            </Animated.View>
-        </PanGestureHandler>
+        <>
+            <Animated.View style={overlaySquare} />
+            <PanGestureHandler onGestureEvent={onGestureEvent} enabled={enableMove}>
+                <Animated.View style={piece}>
+                    <Image style={styles.Pieces} source={PIECES[id]} />
+                </Animated.View>
+            </PanGestureHandler>
+        </>
     )
 };
 
