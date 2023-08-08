@@ -1,8 +1,11 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Row from './Row';
 import Pieces from '../Utils/Pieces';
-// import Logo from '../Assets/Pieces/rook4-w.svg';
+import io from "socket.io-client";
+import Peer from "simple-peer";
+
+const socket = io("http://192.168.124.232:8000");
 
 interface Props {
     chessState: any;
@@ -10,6 +13,10 @@ interface Props {
 }
 
 const Board = ({ chessState, setchessState }: Props) => {
+
+    const [mySocketId, setmySocketId] = useState('');
+    const [newMove, setnewMove] = useState({})
+
     const onTurn = useCallback(() => {
         setchessState({
             player: chessState?.chessInstance?.turn(),
@@ -17,6 +24,27 @@ const Board = ({ chessState, setchessState }: Props) => {
             chessInstance: chessState?.chessInstance
         });
     }, [chessState?.player, chessState?.board, chessState?.chessInstance]);
+
+    useEffect(() => {
+        socket.on("me", (id) => setmySocketId(id));
+    }, [])
+
+    useEffect(() => {
+        console.log('My Socket Id ---', ' - ', mySocketId);
+    }, [mySocketId])
+
+
+    //// Listening New Chess Move of Opponent Player
+    useEffect(() => {
+        socket.on('chessMove', (moveObj) => {
+            console.log('New Chess Move');
+            console.log(moveObj);
+            setnewMove(moveObj);
+        })
+    }, [])
+
+
+
 
     return (
         <View style={styles.container}>
@@ -41,8 +69,8 @@ export default Board;
 
 const styles = StyleSheet.create({
     container: {
-        borderWidth: 5,
+        borderWidth: 10,
         borderColor: '#023020',
-        margin: 10
+        borderRadius: 10
     }
 });
