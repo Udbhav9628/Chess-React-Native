@@ -19,7 +19,7 @@ const PIECES = {
     'wp': require("../Assets/Icons/white-pawn.png"),
 };
 
-const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
+const Pieces = ({ id, position, chess, onTurn, enableMove, socket }: PiecesProps) => {
 
     const offsetX = useSharedValue(0)//// Where Chess Piece is
     const offsetY = useSharedValue(0)
@@ -128,4 +128,5 @@ interface PiecesProps {
     chess: any;
     onTurn: Function;
     enableMove: boolean;
+    socket: any
 }
