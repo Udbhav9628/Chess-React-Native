@@ -5,11 +5,10 @@ import Pieces from '../Utils/Pieces';
 
 interface Props {
     chessState: any;
-    setchessState: Function,
-    socket: any
+    setchessState: Function
 }
 
-const Board = ({ chessState, setchessState, socket }: Props) => {
+const Board = ({ chessState, setchessState }: Props) => {
 
     const onTurn = useCallback(() => {
         setchessState({
@@ -31,7 +30,7 @@ const Board = ({ chessState, setchessState, socket }: Props) => {
                 // //console.log(square);
                 if (square !== null) {
                     return (
-                        <Pieces enableMove={chessState?.player === square.color} onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} socket={socket} />
+                        <Pieces enableMove={chessState?.player === square.color} onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} />
                     )
                 }
             }))}
