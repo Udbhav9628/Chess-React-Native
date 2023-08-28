@@ -1,7 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Row from './Row';
 import Pieces from '../Utils/Pieces';
+import { context } from '../Utils/Context';
 
 interface Props {
     chessState: any;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const Board = ({ chessState, setchessState }: Props) => {
+    const contextApi = context();
 
     const onTurn = useCallback(() => {
         setchessState({
@@ -18,6 +20,11 @@ const Board = ({ chessState, setchessState }: Props) => {
         });
     }, [chessState?.player, chessState?.board, chessState?.chessInstance]);
 
+    useEffect(() => {
+        // onNewMove(contextApi?.newMove?.From, contextApi?.newMove?.To)
+        console.log("In Pieces");
+        console.log(contextApi?.newMove);
+    }, [contextApi?.newMove])
 
     return (
         <View style={styles.container}>

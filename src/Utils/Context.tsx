@@ -11,7 +11,8 @@ interface MyContextValue {
     setwhomToCall: any;
     mySocketId: any;
     Loading: any;
-    opponentSocketId: any
+    opponentSocketId: any;
+    newMove: any;
 }
 
 const MyContext = createContext<MyContextValue | undefined>(undefined);
@@ -23,9 +24,12 @@ export const context = () => {
 export const MyContextProvider = ({ children }: { children: any }) => {
 
     const [whomToCall, setwhomToCall] = useState("")
-    const [Loading, setLoading] = useState(false)
+    const [Loading, setLoading] = useState(false);
     const [mySocketId, setmySocketId] = useState();
-    const [newMove, setnewMove] = useState({})
+    const [newMove, setnewMove] = useState({
+        From: '',
+        To: ''
+    });
     const [opponentSocketId, setopponentSocketId] = useState('');
 
     const handleConnection = () => {
@@ -77,7 +81,7 @@ export const MyContextProvider = ({ children }: { children: any }) => {
     }, [opponentSocketId])
 
     return (
-        <MyContext.Provider value={{ socket, handleConnection, whomToCall, setwhomToCall, mySocketId, Loading, opponentSocketId }}>
+        <MyContext.Provider value={{ socket, handleConnection, whomToCall, setwhomToCall, mySocketId, Loading, opponentSocketId, newMove }}>
             {children}
         </MyContext.Provider>
     );

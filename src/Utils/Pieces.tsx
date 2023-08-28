@@ -1,8 +1,9 @@
 import { Image, StyleSheet } from 'react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming, runOnJS } from "react-native-reanimated";
 import { toTranslation, toPosition } from "../Utils/Notation";
+import { context } from '../Utils/Context';
 
 const PIECES = {
     'br': require("../Assets/Icons/black-rook.png"),
@@ -21,11 +22,35 @@ const PIECES = {
 
 const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
 
+    const contextApi = context();
     const offsetX = useSharedValue(0)//// Where Chess Piece is
     const offsetY = useSharedValue(0)
     const translateX = useSharedValue(position?.x)
     const translateY = useSharedValue(position?.y)
     const isGestureActive = useSharedValue(false);
+
+    const sendMove = (from: string, whereToMove: string) => {
+        console.log("hgghgghhh");
+
+        contextApi?.socket.emit('chessMove', { moveObj: { From: from, To: whereToMove }, towhom: contextApi?.opponentSocketId })
+    }
+
+    const onNewMove = (From: string, to: string) => {
+        const moves = chess.chessInstance.moves({ verbose: true });
+        const move = moves.find((m: any) => m.from === From && m.to === to); // ! To Do Replace this with possible move only for more efficiency;
+        const { x, y } = toTranslation(move ? move.to : From);
+        translateX.value = withTiming(x, { duration: 300 }, () => {
+            //// since move has been make updating offsetX.value
+            offsetX.value = translateX.value;
+        });
+        translateY.value = withTiming(y, { duration: 300 }, () => {
+            offsetY.value = translateY.value;
+        });
+        if (move) {
+            const MoveResult = chess.chessInstance.move({ From, to });
+            onTurn();
+        }
+    }
 
     const movePiece = useCallback(
         (to: string) => {
@@ -45,6 +70,7 @@ const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
             });
             if (move) {
                 const MoveResult = chess.chessInstance.move({ from, to });
+                sendMove(from, to);
                 onTurn();
                 // ! To DO
                 // console.log("***");
@@ -100,6 +126,10 @@ const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
             ],
         }
     })
+
+    // const memoizedNewMove = useMemo(() => {
+    //     return (contextApi?.newMove)
+    // }, [contextApi?.newMove]);
 
     return (
         <>
