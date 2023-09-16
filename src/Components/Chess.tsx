@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, View, Image, TouchableOpacity, Text, ActivityIndicator, BackHandler } from 'react-native';
 import { Chess } from "chess.js";
 import Board from './Board';
-const callImg = require('../Assets/Others/Call.png');
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { context } from '../Utils/Context';
 import ModalComp from '../Utils/Modal';
+const callImg = require('../Assets/Others/Call.png');
 // FIXME:import Clipboard from '@react-native-clipboard/clipboard';
 
 const ChessComp = () => {
@@ -29,18 +29,13 @@ const ChessComp = () => {
     }, [])
 
 
-    useEffect(() => {
-        console.log(chessState.chessInstance.ascii())
-        console.log(chessState.chessInstance.turn())
-    }, [chessState])
+    // useEffect(() => {
+    //     console.log(chessState.chessInstance.ascii())
+    //     console.log(chessState.chessInstance.turn())
+    // }, [chessState])
 
     const handleFocus = () => {
-        console.log('Focused');
         setinputFocused(true)
-    }
-
-    const handleBlur = () => {
-        console.log('Focused Not');
     }
 
     const closeApp = () => {
@@ -57,7 +52,6 @@ const ChessComp = () => {
                     <Image source={callImg} style={{ width: '100%', height: '50%', backgroundColor: 'transparent' }} />
                     <TextInput
                         onFocus={handleFocus}
-                        onBlur={handleBlur}
                         style={styles.textInput}
                         onChangeText={(value) => contextApi?.setwhomToCall(value)}
                         value={inputFocused ? contextApi?.whomToCall?.length : contextApi?.mySocketId}
@@ -68,7 +62,8 @@ const ChessComp = () => {
                     </TouchableOpacity>
                 </View>)}
                 <ModalComp visible={ShowModal} onClose={closeApp} />
-            </View></GestureHandlerRootView>
+            </View>
+        </GestureHandlerRootView>
     )
 }
 

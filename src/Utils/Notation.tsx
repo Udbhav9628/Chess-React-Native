@@ -1,7 +1,6 @@
 // //To Convert chess.js Format (a2, e5) to actual position in Board
 export const toTranslation = (to: any) => {
     "worklet";
-    // worklet don't support destructuring yet
     const tokens = to.split("");
     const col = tokens[0];
     const row = tokens[1];

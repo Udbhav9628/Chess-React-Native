@@ -20,37 +20,48 @@ const PIECES = {
     'wp': require("../Assets/Icons/white-pawn.png"),
 };
 
-const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
+const Pieces = ({ id, position, chess, onTurn, enableMove, pieceId, chessMove }: PiecesProps) => {
 
     const contextApi = context();
-    const offsetX = useSharedValue(0)//// Where Chess Piece is
+    const offsetX = useSharedValue(0)//// Where Chess Piece is, initial Value
     const offsetY = useSharedValue(0)
     const translateX = useSharedValue(position?.x)
     const translateY = useSharedValue(position?.y)
     const isGestureActive = useSharedValue(false);
 
-    const sendMove = (from: string, whereToMove: string) => {
-        console.log("hgghgghhh");
-
-        contextApi?.socket.emit('chessMove', { moveObj: { From: from, To: whereToMove }, towhom: contextApi?.opponentSocketId })
+    const sendMove = (from: string, whereToMove: string, whichPiece: string) => {
+        contextApi?.socket.emit('chessMove', { moveObj: { From: from, To: whereToMove, chessPiece: whichPiece }, towhom: contextApi?.opponentSocketId })
     }
 
-    const onNewMove = (From: string, to: string) => {
-        const moves = chess.chessInstance.moves({ verbose: true });
-        const move = moves.find((m: any) => m.from === From && m.to === to); // ! To Do Replace this with possible move only for more efficiency;
-        const { x, y } = toTranslation(move ? move.to : From);
-        translateX.value = withTiming(x, { duration: 300 }, () => {
-            //// since move has been make updating offsetX.value
-            offsetX.value = translateX.value;
-        });
-        translateY.value = withTiming(y, { duration: 300 }, () => {
-            offsetY.value = translateY.value;
-        });
-        if (move) {
-            const MoveResult = chess.chessInstance.move({ From, to });
-            onTurn();
+    const onNewMove = useCallback(
+        (From: string, to: string) => {
+            const moves = chess.chessInstance.moves({ verbose: true });
+            const move = moves.find((m: any) => m.from === From && m.to === to);
+            const { x, y } = toTranslation(move ? move.to : From);
+            translateX.value = withTiming(x, { duration: 300 }, () => {
+                offsetX.value = translateX.value;
+            });
+            translateY.value = withTiming(y, { duration: 300 }, () => {
+                offsetY.value = translateY.value;
+            });
+            if (move) {
+                chess.chessInstance.move({ from: From, to: to });
+                onTurn();
+            }
+        },
+        [chess, offsetX, offsetY, translateX, translateY]
+    );
+
+    useEffect(() => {
+        if (chessMove?.current === true) {
+            contextApi?.socket.on('chessMove', (moveObj: any) => {
+                if (moveObj?.chessPiece === pieceId) {
+                    onNewMove(moveObj?.From, moveObj?.To);
+                }
+            })
+            chessMove?.current === false;
         }
-    }
+    }, [])
 
     const movePiece = useCallback(
         (to: string) => {
@@ -58,11 +69,11 @@ const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
             const from = toPosition({ x: offsetX.value, y: offsetY.value });
             const possibleMoves = chess.chessInstance.moves({ square: from })
             // console.log(possibleMoves);
-
-            const move = moves.find((m: any) => m.from === from && m.to === to); // ! To Do Replace this with possible move only for more efficiency;
+            // ! To Do Replace this with possible move only for more efficiency;
+            const move = moves.find((m: any) => m.from === from && m.to === to);
             const { x, y } = toTranslation(move ? move.to : from);
             translateX.value = withTiming(x, { duration: 300 }, () => {
-                //// since move has been make updating offsetX.value
+                //// since move has been make updating offsetX.value, because this piece position has been changed
                 offsetX.value = translateX.value;
             });
             translateY.value = withTiming(y, { duration: 300 }, () => {
@@ -70,11 +81,11 @@ const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
             });
             if (move) {
                 const MoveResult = chess.chessInstance.move({ from, to });
-                sendMove(from, to);
+                console.log(chess.chessInstance.ascii())
+                //console.log(MoveResult);
                 onTurn();
+                sendMove(from, to, pieceId);
                 // ! To DO
-                // console.log("***");
-                // console.log(MoveResult);
             }
         },
         [chess, offsetX, offsetY, translateX, translateY]
@@ -127,16 +138,13 @@ const Pieces = ({ id, position, chess, onTurn, enableMove }: PiecesProps) => {
         }
     })
 
-    // const memoizedNewMove = useMemo(() => {
-    //     return (contextApi?.newMove)
-    // }, [contextApi?.newMove]);
-
     return (
         <>
             <Animated.View style={overlaySquare} />
             <PanGestureHandler onGestureEvent={onGestureEvent} enabled={enableMove}>
                 <Animated.View style={piece}>
                     <Image style={styles.Pieces} source={PIECES[id]} />
+                    {/* <Text>{pieceId}</Text> */}
                 </Animated.View>
             </PanGestureHandler>
         </>
@@ -158,4 +166,6 @@ interface PiecesProps {
     chess: any;
     onTurn: Function;
     enableMove: boolean;
+    pieceId: any;
+    chessMove: any;
 }

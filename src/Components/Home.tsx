@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react'
+import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
 const Home = ({ navigation }: propsTypes) => {

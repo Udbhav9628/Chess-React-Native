@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import io from "socket.io-client";
-const socket = io("http://10.0.0.13:8000");
+const socket = io("http://10.0.0.21:8000");
 // import Peer from "simple-peer";
 
 interface MyContextValue {
@@ -63,11 +63,9 @@ export const MyContextProvider = ({ children }: { children: any }) => {
             setopponentSocketId(opponent)
         });
 
-        socket.on('chessMove', (moveObj) => {
-            console.log('New Chess Move');
-            console.log(moveObj);
-            setnewMove(moveObj);
-        })
+        // socket.on('chessMove', (moveObj) => {
+        //     setnewMove(moveObj);
+        // })
     }, [])
 
     useEffect(() => {
@@ -75,7 +73,7 @@ export const MyContextProvider = ({ children }: { children: any }) => {
     }, [mySocketId])
 
     useEffect(() => {
-        if (opponentSocketId.length > 0) {
+        if (opponentSocketId?.length > 0) {
             Alert.alert('My Opponent', `My Oppeonet id ---  ${opponentSocketId}`)
         }
     }, [opponentSocketId])
