@@ -1,4 +1,4 @@
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, Text } from 'react-native';
 import React, { useCallback, useEffect } from 'react';
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming, runOnJS } from "react-native-reanimated";
@@ -144,7 +144,7 @@ const Pieces = ({ id, position, chess, onTurn, enableMove, pieceId, chessMove }:
             <PanGestureHandler onGestureEvent={onGestureEvent} enabled={enableMove}>
                 <Animated.View style={piece}>
                     <Image style={styles.Pieces} source={PIECES[id]} />
-                    {/* <Text>{pieceId}</Text> */}
+                    <Text>{pieceId}</Text>
                 </Animated.View>
             </PanGestureHandler>
         </>

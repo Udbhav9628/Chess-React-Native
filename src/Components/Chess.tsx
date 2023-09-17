@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { context } from '../Utils/Context';
 import ModalComp from '../Utils/Modal';
 const callImg = require('../Assets/Others/Call.png');
-// FIXME:import Clipboard from '@react-native-clipboard/clipboard';
+import { useClipboard } from '@react-native-clipboard/clipboard';
 
 const ChessComp = () => {
 
@@ -27,6 +27,11 @@ const ChessComp = () => {
             setShowModal(true)
         }
     }, [])
+
+    const [data, setString] = useClipboard();
+    const copyToClipboard = () => {
+        setString('hello world');
+    };
 
 
     // useEffect(() => {
@@ -57,7 +62,7 @@ const ChessComp = () => {
                         value={inputFocused ? contextApi?.whomToCall?.length : contextApi?.mySocketId}
                         placeholder="Enter Friend's Connection id"
                     />
-                    <TouchableOpacity onPress={contextApi?.handleConnection} disabled={contextApi?.Loading || contextApi?.whomToCall?.length === 0} style={{ ...styles.button, backgroundColor: contextApi?.Loading || contextApi?.whomToCall?.length === 0 ? "#944048" : '#5e030c', }}>
+                    <TouchableOpacity onPress={copyToClipboard} disabled={contextApi?.Loading || contextApi?.whomToCall?.length === 0} style={{ ...styles.button, backgroundColor: contextApi?.Loading || contextApi?.whomToCall?.length === 0 ? "#944048" : '#5e030c', }}>
                         {contextApi?.Loading ? (<ActivityIndicator size="small" color="white" />) : (<Text style={styles.buttonText}>{inputFocused ? "Connect" : "Copy Id"}</Text>)}
                     </TouchableOpacity>
                 </View>)}

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import io from "socket.io-client";
-const socket = io("http://10.0.0.21:8000");
+const socket = io("http://10.0.0.11:8000");
 // import Peer from "simple-peer";
 
 interface MyContextValue {
