@@ -81,7 +81,6 @@ const Pieces = ({ id, position, chess, onTurn, enableMove, pieceId, chessMove }:
             });
             if (move) {
                 const MoveResult = chess.chessInstance.move({ from, to });
-                console.log(chess.chessInstance.ascii())
                 //console.log(MoveResult);
                 onTurn();
                 sendMove(from, to, pieceId);
@@ -144,7 +143,7 @@ const Pieces = ({ id, position, chess, onTurn, enableMove, pieceId, chessMove }:
             <PanGestureHandler onGestureEvent={onGestureEvent} enabled={enableMove}>
                 <Animated.View style={piece}>
                     <Image style={styles.Pieces} source={PIECES[id]} />
-                    <Text>{pieceId}</Text>
+                    {/* <Text>{pieceId}</Text> */}
                 </Animated.View>
             </PanGestureHandler>
         </>

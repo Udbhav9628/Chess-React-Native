@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import React, { useCallback, useRef } from 'react';
 import Row from './Row';
 import Pieces from '../Utils/Pieces';
+import { context } from '../Utils/Context';
 
 interface Props {
     chessState: any;
@@ -11,6 +12,7 @@ interface Props {
 const Board = ({ chessState, setchessState }: Props) => {
 
     const chessMove = useRef(true)
+    const contextApi = context();
 
     const onTurn = useCallback(() => {
         setchessState({
@@ -28,7 +30,7 @@ const Board = ({ chessState, setchessState }: Props) => {
             {chessState?.board?.map((row: Array<any>, yIndex: number) => row?.map((square, xIndex) => {
                 if (square !== null) {
                     return (
-                        <Pieces chessMove={chessMove} enableMove={chessState?.player === square.color} onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} pieceId={`${xIndex}${yIndex}` as any} />
+                        <Pieces chessMove={chessMove} enableMove={chessState?.player === contextApi?.yourSide} onTurn={onTurn} chess={chessState} position={{ x: (xIndex * 45), y: (yIndex * 40) }} key={xIndex} id={`${square.color}${square.type}` as "br" | "bp" | "bn" | "bb" | "bq" | "bk" | "wr" | "wn" | "wb" | "wq" | "wk" | "wp"} pieceId={`${xIndex}${yIndex}` as any} />
                     )
                 }
             }))}
